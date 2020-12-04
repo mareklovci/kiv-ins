@@ -21,7 +21,6 @@ Téma: Průměrné hodnocení Diplomových prací z kateder FAV,
     \item L: založili jsme 2 Datové zdroje (in/out), založení tabulek ve výstupním datovém zdroji + skript, fyzické schéma, kontext, logické schéma, + tabulka z rekapitulace na \nolinkurl{https://www.kiv.zcu.cz/studies/predmety/ins/odi-topology.html})
     \item L: Datové modely (máme 2, pro každou výstupní tabulku), vazba dat
     \item M: popis transformace (agregace a filtrace). + obrázky obou mapování (Projects -> Mappings), podmínky filtrů, agregací a joinů.
-    \item M: Obrázek konečného schéma, ukázka dat + krátký popis.
 \end{itemize}
 
 Samotnému vytvoření komponent ETL předcházelo založení hlavního (MASTER\_INS\_REPO) a pracovního repozitáře (TAUCHENL\_REPO).
@@ -52,20 +51,6 @@ CREATE TABLE TRG_HODNOCENI_DP (
 \end{lstlisting}
 
 \section{Vypracování}
-
-EM (Expectation-Maximization) algoritmus je jeden ze základních a velice efektivních přístupů, jenž je základem mnoha algoritmů strojového učení.
-V konečném důsledku dochází k odhadu Gaussovských distribučních funkcí, které jsou generátory datové sady.
-
-Samotný algoritmus se skládá ze 3 kroků:
-
-\begin{enumerate}
-    \item E-step;
-    \item M-step;
-    \item Výpočet chyby a návrat na bod 1.
-\end{enumerate}
-
-Před samotným výpočtem musíme stanovit prvotní odhad.
-Podíváme-li se na rozložení dat (obrázek~\ref{fig:result1}), dokážeme odhadnout, že se v datech nachází 2 shluky.
 
 \begin{figure}[htb]
     \centering
@@ -112,30 +97,6 @@ Podíváme-li se na rozložení dat (obrázek~\ref{fig:result1}), dokážeme odh
     \includegraphics[width=0.3\textwidth]{graphs/src-model.png}
     \caption{Vstupní model}
     \label{fig:src-model}
-\end{figure}
-\FloatBarrier
-
-\begin{figure}[htb]
-    \centering
-    \includegraphics[width=0.55\textwidth]{graphs/fig1.eps}
-    \caption{Vstupní data}
-    \label{fig:result1}
-\end{figure}
-\FloatBarrier
-
-Předpokládám symetričnost prvků Gaussovské směsi, tudíž \( \Sigma = I \), protože její asymetričnost sice mohu předpokládat, ale nedokázal bych odhadnout jakým způsobem je asymetrická.
-Středy shluků \( \mu_1, \mu_2 \) byly určeny algoritmem \textit{k-means}, tudíž prvotní odhad je i řešením ke kterému bychom měli po několika iteracích dojít.
-Počáteční váhy Normálních rozdělení byly zvoleny jako \( \frac{1}{\text{počet tříd}} \pm 0.1 \), protože z obrázku vyplývá, že váha každé ze tříd bude rozdílná.
-
-Výpočet byl proveden dvěma způsoby.
-První výpočet je kontrolní, pouze s využitím funkcionalit softwaru MATLAB.
-Výsledek tohoto výpočtu je na obrázku~\ref{fig:result2}.
-
-\begin{figure}[htb]
-    \centering
-    \includegraphics[width=0.55\textwidth]{graphs/fig2.eps}
-    \caption{Výsledné rozdělení dat dle nativního EM algorimu}
-    \label{fig:result2}
 \end{figure}
 \FloatBarrier
 
