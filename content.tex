@@ -162,42 +162,45 @@ Tabelované hodnoty dle zadání jsou v tabulce~\ref{table:table1}.
 \begin{table}[htb]
     \centering
 
-    \begin{tabular}{lrcc}
+    \begin{tabular}{lll}
         \toprule
 
-        Iterace & Chyba     & \( \mu_1 \)       & \( \mu_2 \)       \\ \midrule
-        1       & 0.0537    & [-0.4510 -1.2142] & [3.5411 3.6698]   \\
-        2       & 0.3032    & [-0.3409 -1.1012] & [3.6216 3.7909]   \\
-        3       & 0.2412    & [-0.2684 -0.9977] & [3.7013 3.8736]   \\
-        4       & 0.1674    & [-0.2227 -0.9211] & [3.7617 3.9233]   \\
-        5       & 0.1226    & [-0.1919 -0.8618] & [3.8086 3.9536]   \\
-        6       & 0.0952    & [-0.1675 -0.8166] & [3.8453 3.9777]   \\
-        7       & 0.0638    & [-0.1499 -0.7863] & [3.8689 3.9941]   \\
-        8       & 0.0411    & [-0.1373 -0.7663] & [3.8831 4.0043]   \\
-        9       & 0.0245    & [-0.1304 -0.7548] & [3.8921 4.0107]   \\
-        10      & 0.0123    & [-0.1274 -0.7487] & [3.8970 4.0131]   \\
-        11      & 0.0037    & [-0.1262 -0.7470] & [3.8982 4.0143]   \\
-        12      & 0.0025    & [-0.1253 -0.7459] & [3.8989 4.0149]   \\
-        13      & 0.0007    & [-0.1252 -0.7455] & [3.8993 4.0150]   \\
+        KATEDRA\_ID & KATEDRA\_KOD  & KATEDRA\_NAZEV                            \\ \midrule
+        52110       & KFY           & Katedra fyziky                            \\
+        52130       & KMA           & Katedra matematiky                        \\
+        52140       & KKY           & Katedra kybernetiky                       \\
+        52120       & KME           & Katedra mechaniky                         \\
+        52150       & KIV           & Katedra informatiky a výpočetní techniky  \\
+        52160       & KGM           & Katedra geomatiky                         \\
           
         \bottomrule
     \end{tabular}
 
-    \caption{Tabulované hodnoty parametrů pro každou iteraci}
+    \caption{Data ve výstupní tabulce TRG\_KATEDRY}
     \label{table:table1}
 \end{table}
 \FloatBarrier
 
-Závislost chyby na počtu iterací je v grafu~\ref{fig:result4}.
-Prvotní \enquote{velmi} přesný odhad (tedy malá chyba) je způsobena tím, že první odhad je vypočtem algoritmem \textit{k-means}.
-Po následné reevaluaci rozložení dat ve shlucích jsou středy přepočteny a jelikož se jedná o teprve druhý krok algoritmu, tak tím hohužel znepřesněny.
-
-\begin{figure}[htb]
+\begin{table}[htb]
     \centering
-    \includegraphics[width=0.55\textwidth]{graphs/fig4.eps}
-    \caption{Hodnota chyby v každém uplynulém iteračním kroce}
-    \label{fig:result4}
-\end{figure}
+
+    \begin{tabular}{llll}
+        \toprule
+
+        KATEDRA\_KOD    & OBOR\_ID  & OBOR\_NAZEV                       & HODNOCENI \\ \midrule
+        KIV             & 2252      & Softwarové inženýrství            & 2,25      \\
+        KGM             & 2309      & Geomatika                         & 4         \\
+        KGM             & 2358      & Geomatika                         & 1,875     \\
+        KKY             & 3808      & Automatické řízení a robotika     & NULL      \\
+        KMA             & 2130      & Finanční informatika a statistika & 2,6667    \\
+        \ldots          & \ldots    & \ldots                            & \ldots    \\
+
+        \bottomrule
+    \end{tabular}
+
+    \caption{Ukázková data z výstupní tabulky TRG\_HODNOCENI\_DP}
+    \label{table:table2}
+\end{table}
 \FloatBarrier
 
 \section{Závěr}
@@ -212,3 +215,5 @@ V našem konkrétním případě se pak jedná i o zajímavé propojení předm�
 Jelikož nástroj ODI není jediným produktem tohoto zaměření, stojí za to zmínit sliné a slabé stránky produktu.
 Společnost Oracle je velmi silný dodavatel, poskytující robustní podporu svých produktů, a to zejména v případech tak ověřených nástrojů jakým je Data Integrator.
 Na druhou stranu nelze opomenout zastaralé uživatelské rozhraní, strmou křivku učení a v našich podmínkách velmi pomalé chování.
+
+Za zmínku stojí také možnost nahlédnutí do databáze demo verze systému IS STAG, která přes přítomnost pouze testovacích dat poskytuje bohaté datové schéma k prozkoumání.
