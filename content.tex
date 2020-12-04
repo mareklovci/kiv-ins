@@ -1,16 +1,20 @@
 \section{Zadání}
 
-Průměrné hodnocení Diplomových prací z kateder FAV
+Seznamte se s jádrem datového modelu IS STAG a vytvořte v nástroji Oracle Data Integrator Studio integrační projekt.
+Předpokládá se, že výsledný projekt bude integrovat data do výsledného modelu obsahující minimálně dvě tabulky v relaci 1:N.
+Bylo by též vhodné, aby nad jednou z těchto tabulek byla provedena vhodná selekce a druhá tabulka získala novou hodnotu za pomoci agregované funkce.
+
+Téma: Průměrné hodnocení Diplomových prací z kateder FAV,
 
 \begin{itemize}
-    \item filtrace: katedry FAV (dimenzionální tabulka)
-    \item agregace: průměrné hodnocení DP z kateder (faktová tabulka agregována přes obory)
+    \item filtrace: katedry FAV (dimenzionální tabulka);
+    \item agregace: průměrné hodnocení DP z kateder (faktová tabulka agregovaná přes obory).
 \end{itemize}
 
 \section{Osnova}
 
 \begin{itemize}
-    \item LM: Tabulky obory, studenti, abn\_diplomove\_prace, cis\_pracovist
+    \item LM: Tabulky obory, abn\_diplomove\_prace, cis\_pracovist
     \item LM: analýza: Co obsahují, relevantní sloupce a jejich datové typy, další související tabulky (mimo rozsah zadání), vazby, exportovaný obrázek schématu
     \item L: Vypracování
     \item L: Postup tvorby
@@ -18,12 +22,14 @@ Průměrné hodnocení Diplomových prací z kateder FAV
     \item L: Datové modely (máme 2, pro každou výstupní tabulku), vazba dat
     \item M: popis transformace (agregace a filtrace). + obrázky obou mapování (Projects -> Mappings), podmínky filtrů, agregací a joinů.
     \item M: Obrázek konečného schéma, ukázka dat + krátký popis.
-    \item M: Závěr
 \end{itemize}
 
 Samotnému vytvoření komponent ETL předcházelo založení hlavního (MASTER\_INS\_REPO) a pracovního repozitáře (TAUCHENL\_REPO).
 
-\section{Zakládací skript}
+Nepotřebné sloupce je možné z tabulek odebrat v nabídce Designer -> Models -> <Model folder> -> <Model> -> <Tabulka> (pravý klik) -> Open -> Attributes.
+Po výběru nepotřebných atributů je možné pomocí tlačítka Delete Attribute sloupce z modelu odstranit.
+
+\subsection{Zakládací skript}
 
 \begin{lstlisting}[language=sql]
 CREATE TABLE TRG_KATEDRY (
@@ -43,7 +49,6 @@ CREATE TABLE TRG_HODNOCENI_DP (
   CONSTRAINT PK_TRG_HODNOCENI_DP PRIMARY KEY (OBOR_ID),
   CONSTRAINT FK_KATEDRY_HONOCENI FOREIGN KEY (KATEDRA_KOD) REFERENCES TRG_KATEDRY (KATEDRA_KOD)
 );
-
 \end{lstlisting}
 
 \section{Vypracování}
@@ -104,8 +109,16 @@ Podíváme-li se na rozložení dat (obrázek~\ref{fig:result1}), dokážeme odh
 
 \begin{figure}[htb]
     \centering
+    \includegraphics[width=0.3\textwidth]{graphs/src-model.png}
+    \caption{Vstupní model}
+    \label{fig:src-model}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[htb]
+    \centering
     \includegraphics[width=0.3\textwidth]{graphs/trg-model.png}
-    \caption{Výstupní schéma}
+    \caption{Výstupní model}
     \label{fig:trg-model}
 \end{figure}
 \FloatBarrier
@@ -189,4 +202,13 @@ Po následné reevaluaci rozložení dat ve shlucích jsou středy přepočteny 
 
 \section{Závěr}
 
-sdfsfd
+V semestrální práci jsme si vyzkoušeli proces vytváření datové transformace.
+Tento proces byl náplní praktických cvičení, jednalo se tedy hlavně o důkaz replikovatelnosti postupu na vlastním zadání.
+Použitý nástroj, Oracle Data Integrator, je jeden z nejrozšířenějších ETL produktů vůbec.
+
+Praktická cvičení a semestrální práce nám tedy poskytli cennou příležitost zkusit si s tímto nástrojem pracovat a řešit případné potíže, které mohou při konstrukci transformací nastat.
+V našem konkrétním případě se pak jedná i o zajímavé propojení předmětů, jelikož jsme zvolili transformaci z logického databázového modelu do dimenzionální struktury, poskytujíc referenci na předmět KIV/DBM2.
+
+Jelikož nástroj ODI není jediným produktem tohoto zaměření, stojí za to zmínit sliné a slabé stránky produktu.
+Společnost Oracle je velmi silný dodavatel, poskytující robustní podporu svých produktů, a to zejména v případech tak ověřených nástrojů jakým je Data Integrator.
+Na druhou stranu nelze opomenout zastaralé uživatelské rozhraní, strmou křivku učení a v našich podmínkách velmi pomalé chování.
