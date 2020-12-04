@@ -14,7 +14,6 @@ Téma: Průměrné hodnocení Diplomových prací z kateder FAV,
 \section{Osnova}
 
 \begin{itemize}
-    \item LM: Tabulky obory, abn\_diplomove\_prace, cis\_pracovist
     \item LM: analýza: Co obsahují, relevantní sloupce a jejich datové typy, další související tabulky (mimo rozsah zadání), vazby, exportovaný obrázek schématu
     \item L: Vypracování
     \item L: Postup tvorby
@@ -23,7 +22,7 @@ Téma: Průměrné hodnocení Diplomových prací z kateder FAV,
     \item M: popis transformace (agregace a filtrace). + obrázky obou mapování (Projects -> Mappings), podmínky filtrů, agregací a joinů.
 \end{itemize}
 
-Samotnému vytvoření komponent ETL předcházelo založení hlavního (MASTER\_INS\_REPO) a pracovního repozitáře (TAUCHENL\_REPO).
+Samotnému vytvoření komponent ETL předcházelo založení hlavního (MASTER\_INS\_REPO) a~pracovního repozitáře (TAUCHENL\_REPO).
 
 Nepotřebné sloupce je možné z tabulek odebrat v nabídce Designer -> Models -> <Model folder> -> <Model> -> <Tabulka> (pravý klik) -> Open -> Attributes.
 Po výběru nepotřebných atributů je možné pomocí tlačítka Delete Attribute sloupce z modelu odstranit.
@@ -49,6 +48,8 @@ CREATE TABLE TRG_HODNOCENI_DP (
   CONSTRAINT FK_KATEDRY_HONOCENI FOREIGN KEY (KATEDRA_KOD) REFERENCES TRG_KATEDRY (KATEDRA_KOD)
 );
 \end{lstlisting}
+
+\section{Analýza}
 
 \section{Vypracování}
 
@@ -94,7 +95,7 @@ CREATE TABLE TRG_HODNOCENI_DP (
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=0.3\textwidth]{graphs/src-model.png}
+    \includegraphics[width=0.7\textwidth]{graphs/src-model.png}
     \caption{Vstupní model}
     \label{fig:src-model}
 \end{figure}
