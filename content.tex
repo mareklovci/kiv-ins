@@ -23,6 +23,29 @@ Průměrné hodnocení Diplomových prací z kateder FAV
 
 Samotnému vytvoření komponent ETL předcházelo založení hlavního (MASTER\_INS\_REPO) a pracovního repozitáře (TAUCHENL\_REPO).
 
+\section{Zakládací skript}
+
+\begin{lstlisting}[language=sql]
+CREATE TABLE TRG_KATEDRY (
+  KATEDRA_ID NUMERIC(16),
+  KATEDRA_KOD VARCHAR(50) NOT NULL,
+  KATEDRA_NAZEV VARCHAR(100),
+
+  CONSTRAINT PK_TRG_KATEDRY PRIMARY KEY (KATEDRA_KOD)
+);
+
+CREATE TABLE TRG_HODNOCENI_DP (
+  KATEDRA_KOD VARCHAR(50),
+  OBOR_ID NUMERIC(10) NOT NULL,
+  OBOR_NAZEV VARCHAR(55),
+  HODNOCENI VARCHAR(50),
+
+  CONSTRAINT PK_TRG_HODNOCENI_DP PRIMARY KEY (OBOR_ID),
+  CONSTRAINT FK_KATEDRY_HONOCENI FOREIGN KEY (KATEDRA_KOD) REFERENCES TRG_KATEDRY (KATEDRA_KOD)
+);
+
+\end{lstlisting}
+
 \section{Vypracování}
 
 EM (Expectation-Maximization) algoritmus je jeden ze základních a velice efektivních přístupů, jenž je základem mnoha algoritmů strojového učení.
@@ -38,6 +61,54 @@ Samotný algoritmus se skládá ze 3 kroků:
 
 Před samotným výpočtem musíme stanovit prvotní odhad.
 Podíváme-li se na rozložení dat (obrázek~\ref{fig:result1}), dokážeme odhadnout, že se v datech nachází 2 shluky.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.7\textwidth]{graphs/odi-mapping-trg-katedry.png}
+    \caption{ODI Výstupní mapování do tabulky TRG\_KATEDRY, logické schéma}
+    \label{fig:odi-mapping-trg-katedry}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.7\textwidth]{graphs/odi-mapping-trg-katedry-physical.png}
+    \caption{ODI Výstupní mapování do tabulky TRG\_KATEDRY, fyzické schéma}
+    \label{fig:odi-mapping-trg-katedry-physical}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.7\textwidth]{graphs/odi-mapping-trg-hodnoceni-dp.png}
+    \caption{ODI Výstupní mapování do tabulky TRG\_HODNOCENI\_DP, logické schéma}
+    \label{fig:odi-mapping-trg-hodnoceni}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.7\textwidth]{graphs/odi-mapping-trg-hodnoceni-dp-physical.png}
+    \caption{ODI Výstupní mapování do tabulky TRG\_HODNOCENI\_DP, fyzické schéma}
+    \label{fig:odi-mapping-trg-hodnoceni-physical}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.55\textwidth]{graphs/odi-transformation-components.png}
+    \caption{ODI nabídka komponent}
+    \label{fig:odi-transformation-components}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.3\textwidth]{graphs/trg-model.png}
+    \caption{Výstupní schéma}
+    \label{fig:trg-model}
+\end{figure}
+\FloatBarrier
 
 \begin{figure}[htb]
     \centering
