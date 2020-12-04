@@ -117,14 +117,6 @@ Podíváme-li se na rozložení dat (obrázek~\ref{fig:result1}), dokážeme odh
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=0.3\textwidth]{graphs/trg-model.png}
-    \caption{Výstupní model}
-    \label{fig:trg-model}
-\end{figure}
-\FloatBarrier
-
-\begin{figure}[htb]
-    \centering
     \includegraphics[width=0.55\textwidth]{graphs/fig1.eps}
     \caption{Vstupní data}
     \label{fig:result1}
@@ -147,17 +139,24 @@ Výsledek tohoto výpočtu je na obrázku~\ref{fig:result2}.
 \end{figure}
 \FloatBarrier
 
-Graf~\ref{fig:result3} zobrazuje výsledek po výpočtu implementovaným E-M algoritmem.
+\subsection{Výstupní model \& data}
+
+Model výstupních dat je znázorněn na obrázku~\ref{fig:trg-model}.
+Myšlenka tohoto schéma je poskytnout dimenzionální pohled na data, s tabulkou \textit{TRG\_KATEDRY} jako dimenzí a \textit{TRG\_HODNOCENI\_DP} jako faktovou tabulkou.
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=0.55\textwidth]{graphs/fig3.eps}
-    \caption{Výsledné rozdělení dat dle implementovaného E-M algorimu}
-    \label{fig:result3}
+    \includegraphics[width=0.3\textwidth]{graphs/trg-model.png}
+    \caption{Výstupní model}
+    \label{fig:trg-model}
 \end{figure}
 \FloatBarrier
 
-Tabelované hodnoty dle zadání jsou v tabulce~\ref{table:table1}.
+Výstupní data z transformací jsou k vidění v tabulkách~\ref{table:table1}~\&~\ref{table:table2}.
+Jak již vyplývá z předešlého popisu, tabulka \textit{Katedry} obsahuje 3 sloupce: \textit{KATEDRA\_ID}, \textit{KATEDRA\_KOD} a \textit{KATEDRA\_NAZEV}.
+
+\textit{KATEDRA\_ID} měl původně sloužit jako primární klíč celé tabulky, z důvodu praktičnosti byl však v účelu nahrazen jejím kódem.
+Tabulka obsahuje, dle zadání, pouze katedry FAV.
 
 \begin{table}[htb]
     \centering
@@ -167,9 +166,9 @@ Tabelované hodnoty dle zadání jsou v tabulce~\ref{table:table1}.
 
         KATEDRA\_ID & KATEDRA\_KOD  & KATEDRA\_NAZEV                            \\ \midrule
         52110       & KFY           & Katedra fyziky                            \\
+        52120       & KME           & Katedra mechaniky                         \\
         52130       & KMA           & Katedra matematiky                        \\
         52140       & KKY           & Katedra kybernetiky                       \\
-        52120       & KME           & Katedra mechaniky                         \\
         52150       & KIV           & Katedra informatiky a výpočetní techniky  \\
         52160       & KGM           & Katedra geomatiky                         \\
           
@@ -180,6 +179,10 @@ Tabelované hodnoty dle zadání jsou v tabulce~\ref{table:table1}.
     \label{table:table1}
 \end{table}
 \FloatBarrier
+
+Faktová tabulka \textit{Hodnocení} obsahuje 4 sloupce: \textit{KATEDRA\_KOD}, \textit{OBOR\_ID}, \textit{OBOR\_NAZEV} a~\textit{HODNOCENI}.
+Abychom docílili splnění zadání, hodnocení je agregát (průměrná hodnota) hodnocení pro každý z oborů referencovaných kateder.
+Jelikož by každý obor měl být v tabulce pouze jednou, je identifikační číslo oboru použito jako primární klíč.
 
 \begin{table}[htb]
     \centering
@@ -212,7 +215,7 @@ Použitý nástroj, Oracle Data Integrator, je jeden z nejrozšířenějších E
 Praktická cvičení a semestrální práce nám tedy poskytli cennou příležitost zkusit si s tímto nástrojem pracovat a řešit případné potíže, které mohou při konstrukci transformací nastat.
 V našem konkrétním případě se pak jedná i o zajímavé propojení předmětů, jelikož jsme zvolili transformaci z logického databázového modelu do dimenzionální struktury, poskytujíc referenci na předmět KIV/DBM2.
 
-Jelikož nástroj ODI není jediným produktem tohoto zaměření, stojí za to zmínit sliné a slabé stránky produktu.
+Jelikož nástroj ODI není jediným produktem tohoto zaměření, stojí za to zmínit silné a slabé stránky produktu.
 Společnost Oracle je velmi silný dodavatel, poskytující robustní podporu svých produktů, a to zejména v případech tak ověřených nástrojů jakým je Data Integrator.
 Na druhou stranu nelze opomenout zastaralé uživatelské rozhraní, strmou křivku učení a v našich podmínkách velmi pomalé chování.
 
