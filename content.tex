@@ -22,14 +22,72 @@ Téma: Průměrné hodnocení Diplomových prací z kateder FAV,
     \item M: popis transformace (agregace a filtrace). + obrázky obou mapování (Projects -> Mappings), podmínky filtrů, agregací a joinů.
 \end{itemize}
 
-Samotnému vytvoření komponent ETL předcházelo založení hlavního (MASTER\_INS\_REPO) a~pracovního repozitáře (TAUCHENL\_REPO).
 
-Nepotřebné sloupce je možné z tabulek odebrat v nabídce Designer -> Models -> <Model folder> -> <Model> -> <Tabulka> (pravý klik) -> Open -> Attributes.
-Po výběru nepotřebných atributů je možné pomocí tlačítka Delete Attribute sloupce z modelu odstranit.
+
+
+\section{Analýza}
+
+\section{Vypracování}
+
+ \subsection{Datové zdroje a schémata}
+ \par Proces vypracování úkolu se skládal z několika kroků. Předpokladem pro 
+ vytvoření komponent ETL bylo založení hlavního (MASTER\_INS\_REPO) a~pracovního repozitáře (TAUCHENL\_REPO). Tyto dva repozitáře jsme již měli založené z jednoho z prvních cvičení předmětu.  Věnovali jsme se tedy rovnou založení datových zdrojů. 
+ 
+ \par  Datové zdroje jsme pro náš projekt potřebovali dva - jeden pro zdrojovou databázi \textit{LOVCIM\_ZDROJ3} a jeden pro cílovou databázi \textit{LOVCIM\_CIL}. Druhý zmíněný datový zdroj jsme taktéž měli založený již z dřívějška. 
+ 
+  \par Dalším krokem bylo založit fyzické a logické schéma. Fyzické schéma datového modelu reprezentuje strukturu databáze na fyzické úrovni. Jde o popis
+ vlastního uložení dat (např. uložení záznamu o konkrétním studentovi). Fyzické schéma pro zdrojovou databázi se v našem případě jmenuje \textit{LOVCIM\_ZDROJ3.INSTALL2} a používá schéma účtu INSTALL2 a pracovní schéma účtu LOFFEL. Toto nastavení souvisí s přiřazením různých uživatelských rolí a příslušných práv pro přístup k datům používané demo databáze stagu. Účet \textit{INSTALL2} je specifickým účtem, který obsahuje všechny tabulky databáze. Účet \textit{LOFFEL} je jedním z administrátorských účtů, který jako takový má přístup ke všem tabulkám. 
+ 
+  \par Logické schéma reprezentuje logickou strukturu databáze. Jinak řečeno, logické schéma popisuje, jaká data jsou v databázi uložena a jaké jsou vztahy mezi těmito daty. Logické schéma v Odi studiu kombinuje dvojici kontext (viz dále) a fyzické schéma, které tímto logickým schématem svážeme dohromady. V naší úloze bylo potřeba založit opět pouze jedno schéma - logické schéma pro zdrojovou databázi(\textit{Zdrojova\_databaze\_SP}). Logické schéma pro cílovou databázi už v projektu existovalo. 
+ 
+  \par Ke správnému nastavení obou schémat byl zapotřebí výše zmíněný kontext. Kontext je množina prostředků umožňujících provoz nebo simulaci jedné nebo více aplikací, které zpracovávají data. Do naší úlohy jsme využili již existující kontext \textit{lovcim}, který jsme nastavili u obou nově vytvořených schémat. 
+ 
+ \par Konečný stav vytvořených datových zdrojů a schémat je následující: \\
+
+Datový zdroj: \textit{LOVCIM\_ZDROJ3} \newline
+Fyzické schéma: \textit{LOVCIM\_ZDROJ3.INSTALL2}\newline
+- Schéma: \textit{INSTALL2}\newline
+- Pracovní schéma: \textit{LOFFEL}\newline
+Logické schéma: \textit{Zdrojova\_databaze\_SP}\newline
+Kontext: lovcim \newline
+
+Datový zdroj: \textit{LOVCIM\_CIL}\\
+Fyzické schéma: \textit{LOVCIM\_CIL.LOVCIM}\\
+- Schéma: \textit{LOVCIM}\\
+- Pracovní schéma: \textit{LOVCIM}\\
+Logické schéma: \textit{Cilova\_databaze}\\
+Kontext: lovcim\\
+ 
+ 
+\subsection{Datové modelování}
+ \par Po připravení datových zdrojů jsme mohli začít s datovým modelováním. Založili jsme dva datové modely. Prvním datovým modelem je model \textit{Diplomky}. Jde o model zdrojový, ze kterého se budou načítat data při mapování. Tento datový model se skládá ze 4 tabulek: 
+\begin{itemize}
+    \item ABN\_DIPLOMOVE\_PRACE: Tabulka obsahující data o diplomových pracích
+    \item CIS\_PRACOVIST: Číselník pracovišť ZČU
+    \item OBORY: Tabulka obsahující data o oborech na ZČU 
+    \item STUDENTI: Tabulka obsahující data o studentech ZČU
+\end{itemize}
+
+Jak již bylo řečeno, tyto tabulky jsou zdrojové a jsou obsaženy v ve zdrojové databázi demo stagu, odkud je potřeba je načíst. Vybrané tabulky vč. dat jsme načetli pomocí reverzního inženýrství. Vztahy mezi načtenými tabulkami jsou vidět na obr. č. \ref{fig:src-model}. 
+
+Načtené tabulky obahující i pro náš úkol nepotřebná data (=nepotřebné sloupce). Ty je možné v Odi studiu z tabulek odebrat přes menu pro datový model. Přesněji řečeno postupem: Designer -> Models -> <Model folder> -> <Model> -> <Tabulka> (pravý klik) -> Open -> Attributes.
+Po výběru nepotřebných atributů je možné sloupce z modelu pomocí tlačítka Delete Attribute odstranit. 
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.7\textwidth]{graphs/src-model.png}
+    \caption{Vstupní model}
+    \label{fig:src-model}
+\end{figure}
+\FloatBarrier
+
+Druhým modelem je výstupní model \textit{Diplomky\_vystup}. Do tohoto modelu budou uloženy výsledky z mapování. Na rozdíl od zdrojového modelu, ve kterém stačilo pouze načíst již existující tabulky, zde jsme museli nejprve cílové tabulky ve výstupním datovém zdroji založit. Zdrojová databáze je logicky neobsahovala. 
+
+Pro založení výstupních tabulek jsme použili skript, který je vidět níže v sekci Zakládací skript. Pomocí tohoto skriptu jsme založili tabulky \textit{TRG\_KATEDRY} a \textit{TRG\_HODNOCENI\_DP}. Do modelu \textit{Diplomky\_vystup} jsme je načetli opět reverzním inženýrstvím.  
 
 \subsection{Zakládací skript}
-
 \begin{lstlisting}[language=sql]
+
 CREATE TABLE TRG_KATEDRY (
   KATEDRA_ID NUMERIC(16),
   KATEDRA_KOD VARCHAR(50) NOT NULL,
@@ -49,9 +107,12 @@ CREATE TABLE TRG_HODNOCENI_DP (
 );
 \end{lstlisting}
 
-\section{Analýza}
 
-\section{Vypracování}
+ \subsection{Datové modelování}
+ Posledním krokem vypracování úkolu bylo samotné mapování. ....
+
+
+
 
 \begin{figure}[htb]
     \centering
