@@ -26,6 +26,27 @@ Téma: Průměrné hodnocení Diplomových prací z kateder FAV,
 
 
 \section{Analýza}
+Cílem naší semestrální práce bylo zjistit průměrné hodnocení diplomových prací v rámci jednotlivých kateder na Fakultě aplikovaných věd. Abychom tento úkol mohli realizovat, museli jsme nejprve vybrat vhodné tabulky z demo databáze stagu. Stag obsahuje více než 400 tabulek, z čehož jen jeho jádro tvoří více než 50 z nich. Zorientování se v databázi bylo velmi náročné. 
+
+Po analýze obsahu tabulek stagu, jsme pro náš vstupní model vybrali tabulky \textit{OBORY}, \textit{CIS\_PRACOVIST} a \textit{ABN\_DIPLOMOVE\_PRACE}. 
+
+Nejjednodušší z nich je tabulka \textit{CIS\_PRACOVIST}, která představuje číselník pracovišť na ZČU. Tabulka obsahuje 19 různých atributů. Pro nás jsou však důležité pouze první tři a to \textit{ZKR} (zkratka pracoviště, datový typ VARCHAR2(6 BYTE)), \textit{NAZEV} (název pracoviště, datový typ VARCHAR2(100 BYTE)) a \textit{CISLO\_PRAC} (číslo pracoviště, datový typ VARCHAR2(16 BYTE) ). Primární klíč tabulky tvoří sloupec \textit{ZKR}. Tuto tabulku jsme použili pro získání názvů kateder na FAV (více viz sekce Mapování). 
+
+Tabulka \textit{OBORY} reprezentuje seznam oborů vyučovaných na ZČU. Relevantní sloupce pro naši úlohu jsou sloupce \textit{OBORIDNO} (ID oboru, datový typ NUMBER(10,0)), \textit{CZ\_NAZEV} (název oboru, datový typ VARCHAR2(200 BYTE)), \textit{ZKR} (zkratka oboru, datový typ VARCHAR2(10 BYTE)), \textit{PRAC\_ZKR} (zkratka pracoviště, datový typ VARCHAR2(6 BYTE)) a \textit{FAKULTA\_OBORU} (fakulta oboru, datový typ VARCHAR2(6 BYTE)). Primární klíč tvoří sloupec \textit{OBORNO}. Tuto tabulku jsme využili pro získání oborů vyučovaných na FAV. 
+
+Poslední a nejdůležitější vybranou tabulkou je tabulka \textit{ABN\_DIPLOMOVE\_PRACE}. 
+Z této tabulky jsme využili sloupce \textit{ZNAMKA} (výsledná známka DP, datový typ NUMBER(2,1)),  \textit{PRAC\_ZKR} (zkratka pracoviště, datový typ VARCHAR2(6 BYTE)) a \textit{OBORIDNO} (klíč do tabulky Obory, datový typ NUMBER(10,0)). Tuto tabulku jsme využili pro získání známek diplomových prací. 
+
+Tyto tabulky tvoří náš vstupní model. Vztahy mezi tabulkami ukazuje obr. č. \ref{fig:src-model}. 
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.7\textwidth]{graphs/src-model.png}
+    \caption{Vstupní model}
+    \label{fig:src-model}
+\end{figure}
+\FloatBarrier
+
 
 \section{Vypracování}
 
@@ -35,8 +56,7 @@ Téma: Průměrné hodnocení Diplomových prací z kateder FAV,
  
  \par  Datové zdroje jsme pro náš projekt potřebovali dva - jeden pro zdrojovou databázi \textit{LOVCIM\_ZDROJ3} a jeden pro cílovou databázi \textit{LOVCIM\_CIL}. Druhý zmíněný datový zdroj jsme taktéž měli založený již z dřívějška. 
  
-  \par Dalším krokem bylo založit fyzické a logické schéma. Fyzické schéma datového modelu reprezentuje strukturu databáze na fyzické úrovni. Jde o popis
- vlastního uložení dat (např. uložení záznamu o konkrétním studentovi). Fyzické schéma pro zdrojovou databázi se v našem případě jmenuje \textit{LOVCIM\_ZDROJ3.INSTALL2} a používá schéma účtu INSTALL2 a pracovní schéma účtu LOFFEL. Toto nastavení souvisí s přiřazením různých uživatelských rolí a příslušných práv pro přístup k datům používané demo databáze stagu. Účet \textit{INSTALL2} je specifickým účtem, který obsahuje všechny tabulky databáze. Účet \textit{LOFFEL} je jedním z administrátorských účtů, který jako takový má přístup ke všem tabulkám. 
+  \par Dalším krokem bylo vytvořit fyzické a logické schéma. Fyzické schéma datového modelu reprezentuje strukturu databáze na fyzické úrovni. Jde o popis vlastního uložení dat (např. uložení záznamu o konkrétním studentovi). Fyzické schéma pro zdrojovou databázi se v našem případě jmenuje \textit{LOVCIM\_ZDROJ3.INSTALL2} a používá schéma účtu INSTALL2 a pracovní schéma účtu LOFFEL. Toto nastavení souvisí s přiřazením různých uživatelských rolí a příslušných práv pro přístup k datům používané demo databáze stagu. Účet \textit{INSTALL2} je specifickým účtem, který obsahuje všechny tabulky databáze. Účet \textit{LOFFEL} je jedním z administrátorských účtů, který jako takový má přístup ke všem tabulkám. 
  
   \par Logické schéma reprezentuje logickou strukturu databáze. Jinak řečeno, logické schéma popisuje, jaká data jsou v databázi uložena a jaké jsou vztahy mezi těmito daty. Logické schéma v Odi studiu kombinuje dvojici kontext (viz dále) a fyzické schéma, které tímto logickým schématem svážeme dohromady. V naší úloze bylo potřeba založit opět pouze jedno schéma - logické schéma pro zdrojovou databázi(\textit{Zdrojova\_databaze\_SP}). Logické schéma pro cílovou databázi už v projektu existovalo. 
  
@@ -60,28 +80,19 @@ Kontext: lovcim\\
  
  
 \subsection{Datové modelování}
- \par Po připravení datových zdrojů jsme mohli začít s datovým modelováním. Založili jsme dva datové modely. Prvním datovým modelem je model \textit{Diplomky}. Jde o model zdrojový, ze kterého se budou načítat data při mapování. Tento datový model se skládá ze 4 tabulek: 
+ \par Po připravení datových zdrojů jsme mohli začít s datovým modelováním. Založili jsme dva datové modely. Prvním datovým modelem je model \textit{Diplomky}. Jde o model zdrojový, ze kterého se načítají data při mapování. Tento datový model se skládá ze 3 tabulek: 
 \begin{itemize}
     \item ABN\_DIPLOMOVE\_PRACE: Tabulka obsahující data o diplomových pracích
     \item CIS\_PRACOVIST: Číselník pracovišť ZČU
     \item OBORY: Tabulka obsahující data o oborech na ZČU 
-    \item STUDENTI: Tabulka obsahující data o studentech ZČU
 \end{itemize}
 
-Jak již bylo řečeno, tyto tabulky jsou zdrojové a jsou obsaženy v ve zdrojové databázi demo stagu, odkud je potřeba je načíst. Vybrané tabulky vč. dat jsme načetli pomocí reverzního inženýrství. Vztahy mezi načtenými tabulkami jsou vidět na obr. č. \ref{fig:src-model}. 
+Jak již bylo řečeno, tyto tabulky jsou zdrojové a jsou obsaženy ve zdrojové databázi demo stagu, odkud bylo potřeba je načíst. Vybrané tabulky vč. dat jsme načetli pomocí reverzního inženýrství. Vztahy mezi načtenými tabulkami jsou vidět na obr. č. \ref{fig:src-model}. 
 
-Načtené tabulky obahující i pro náš úkol nepotřebná data (=nepotřebné sloupce). Ty je možné v Odi studiu z tabulek odebrat přes menu pro datový model. Přesněji řečeno postupem: Designer -> Models -> <Model folder> -> <Model> -> <Tabulka> (pravý klik) -> Open -> Attributes.
+Tabulky obsahují i pro náš úkol nepotřebná data (= nepotřebné sloupce). Ty je možné v Odi studiu z tabulek odebrat přes menu pro příslušný datový model. Přesněji řečeno postupem: Designer -> Models -> <Model folder> -> <Model> -> <Tabulka> (pravý klik) -> Open -> Attributes.
 Po výběru nepotřebných atributů je možné sloupce z modelu pomocí tlačítka Delete Attribute odstranit. 
 
-\begin{figure}[htb]
-    \centering
-    \includegraphics[width=0.7\textwidth]{graphs/src-model.png}
-    \caption{Vstupní model}
-    \label{fig:src-model}
-\end{figure}
-\FloatBarrier
-
-Druhým modelem je výstupní model \textit{Diplomky\_vystup}. Do tohoto modelu budou uloženy výsledky z mapování. Na rozdíl od zdrojového modelu, ve kterém stačilo pouze načíst již existující tabulky, zde jsme museli nejprve cílové tabulky ve výstupním datovém zdroji založit. Zdrojová databáze je logicky neobsahovala. 
+Druhým modelem je výstupní model \textit{Diplomky\_vystup}. Do tohoto modelu jsou uloženy výsledky z mapování. Na rozdíl od zdrojového modelu, ve kterém stačilo pouze načíst již existující tabulky, zde jsme museli nejprve cílové tabulky ve výstupním datovém zdroji založit.
 
 Pro založení výstupních tabulek jsme použili skript, který je vidět níže v sekci Zakládací skript. Pomocí tohoto skriptu jsme založili tabulky \textit{TRG\_KATEDRY} a \textit{TRG\_HODNOCENI\_DP}. Do modelu \textit{Diplomky\_vystup} jsme je načetli opět reverzním inženýrstvím.  
 
@@ -108,7 +119,7 @@ CREATE TABLE TRG_HODNOCENI_DP (
 \end{lstlisting}
 
 
- \subsection{Datové modelování}
+ \subsection{Mapování}
  Posledním krokem vypracování úkolu bylo samotné mapování. ....
 
 
@@ -154,13 +165,6 @@ CREATE TABLE TRG_HODNOCENI_DP (
 \end{figure}
 \FloatBarrier
 
-\begin{figure}[htb]
-    \centering
-    \includegraphics[width=0.7\textwidth]{graphs/src-model.png}
-    \caption{Vstupní model}
-    \label{fig:src-model}
-\end{figure}
-\FloatBarrier
 
 \subsection{Výstupní model \& data}
 
