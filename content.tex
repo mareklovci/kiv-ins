@@ -11,28 +11,19 @@ Téma: Průměrné hodnocení Diplomových prací z kateder FAV,
     \item agregace: průměrné hodnocení DP z kateder (faktová tabulka agregovaná přes obory).
 \end{itemize}
 
-\section{Osnova}
-
-\begin{itemize}
-    \item LM: analýza: Co obsahují, relevantní sloupce a jejich datové typy, další související tabulky (mimo rozsah zadání), vazby, exportovaný obrázek schématu
-    \item L: Vypracování
-    \item L: Postup tvorby
-    \item L: založili jsme 2 Datové zdroje (in/out), založení tabulek ve výstupním datovém zdroji + skript, fyzické schéma, kontext, logické schéma, + tabulka z rekapitulace na \nolinkurl{https://www.kiv.zcu.cz/studies/predmety/ins/odi-topology.html})
-    \item L: Datové modely (máme 2, pro každou výstupní tabulku), vazba dat
-    \item M: popis transformace (agregace a filtrace). + obrázky obou mapování (Projects -> Mappings), podmínky filtrů, agregací a joinů.
-\end{itemize}
-
-
-
-
 \section{Analýza}
 Cílem naší semestrální práce bylo zjistit průměrné hodnocení diplomových prací v rámci jednotlivých kateder na Fakultě aplikovaných věd. Abychom tento úkol mohli realizovat, museli jsme nejprve vybrat vhodné tabulky z demo databáze stagu. Stag obsahuje více než 400 tabulek, z čehož jen jeho jádro tvoří více než 50 z nich. Zorientování se v databázi bylo velmi náročné. 
 
 Po analýze obsahu tabulek stagu, jsme pro náš vstupní model vybrali tabulky \textit{OBORY}, \textit{CIS\_PRACOVIST} a \textit{ABN\_DIPLOMOVE\_PRACE}. 
 
-Nejjednodušší z nich je tabulka \textit{CIS\_PRACOVIST}, která představuje číselník pracovišť na ZČU. Tabulka obsahuje 19 různých atributů. Pro nás jsou však důležité pouze první tři a to \textit{ZKR} (zkratka pracoviště, datový typ VARCHAR2(6 BYTE)), \textit{NAZEV} (název pracoviště, datový typ VARCHAR2(100 BYTE)) a \textit{CISLO\_PRAC} (číslo pracoviště, datový typ VARCHAR2(16 BYTE) ). Primární klíč tabulky tvoří sloupec \textit{ZKR}. Tuto tabulku jsme použili pro získání názvů kateder na FAV (více viz sekce Mapování). 
+Nejjednodušší z nich je tabulka \textit{CIS\_PRACOVIST}, která představuje číselník pracovišť na ZČU.
+Tabulka obsahuje 19 různých atributů.
+Pro nás jsou však důležité pouze první tři a to \textit{ZKR} (zkratka pracoviště, datový typ VARCHAR2(6 BYTE)), \textit{NAZEV} (název pracoviště, datový typ VARCHAR2(100 BYTE)) a \textit{CISLO\_PRAC} (číslo pracoviště, datový typ VARCHAR2(16 BYTE) ).
+Primární klíč tabulky tvoří sloupec \textit{ZKR}.
+Tuto tabulku jsme použili pro získání názvů kateder na FAV (více viz sekce Mapování). 
 
-Tabulka \textit{OBORY} reprezentuje seznam oborů vyučovaných na ZČU. Relevantní sloupce pro naši úlohu jsou sloupce \textit{OBORIDNO} (ID oboru, datový typ NUMBER(10,0)), \textit{CZ\_NAZEV} (název oboru, datový typ VARCHAR2(200 BYTE)), \textit{ZKR} (zkratka oboru, datový typ VARCHAR2(10 BYTE)), \textit{PRAC\_ZKR} (zkratka pracoviště, datový typ VARCHAR2(6 BYTE)) a \textit{FAKULTA\_OBORU} (fakulta oboru, datový typ VARCHAR2(6 BYTE)). Primární klíč tvoří sloupec \textit{OBORNO}. Tuto tabulku jsme využili pro získání oborů vyučovaných na FAV. 
+Tabulka \textit{OBORY} reprezentuje seznam oborů vyučovaných na ZČU.
+Relevantní sloupce pro naši úlohu jsou sloupce \textit{OBORIDNO} (ID oboru, datový typ NUMBER(10,0)), \textit{CZ\_NAZEV} (název oboru, datový typ VARCHAR2(200 BYTE)), \textit{ZKR} (zkratka oboru, datový typ VARCHAR2(10 BYTE)), \textit{PRAC\_ZKR} (zkratka pracoviště, datový typ VARCHAR2(6 BYTE)) a \textit{FAKULTA\_OBORU} (fakulta oboru, datový typ VARCHAR2(6 BYTE)). Primární klíč tvoří sloupec \textit{OBORNO}. Tuto tabulku jsme využili pro získání oborů vyučovaných na FAV. 
 
 Poslední a nejdůležitější vybranou tabulkou je tabulka \textit{ABN\_DIPLOMOVE\_PRACE}. 
 Z této tabulky jsme využili sloupce \textit{ZNAMKA} (výsledná známka DP, datový typ NUMBER(2,1)),  \textit{PRAC\_ZKR} (zkratka pracoviště, datový typ VARCHAR2(6 BYTE)) a \textit{OBORIDNO} (klíč do tabulky Obory, datový typ NUMBER(10,0)). Tuto tabulku jsme využili pro získání známek diplomových prací. 
@@ -47,56 +38,93 @@ Tyto tabulky tvoří náš vstupní model. Vztahy mezi tabulkami ukazuje obr. č
 \end{figure}
 \FloatBarrier
 
-
 \section{Vypracování}
 
- \subsection{Datové zdroje a schémata}
- \par Proces vypracování úkolu se skládal z několika kroků. Předpokladem pro 
- vytvoření komponent ETL bylo založení hlavního (MASTER\_INS\_REPO) a~pracovního repozitáře (TAUCHENL\_REPO). Tyto dva repozitáře jsme již měli založené z jednoho z prvních cvičení předmětu.  Věnovali jsme se tedy rovnou založení datových zdrojů. 
- 
- \par  Datové zdroje jsme pro náš projekt potřebovali dva - jeden pro zdrojovou databázi \textit{LOVCIM\_ZDROJ3} a jeden pro cílovou databázi \textit{LOVCIM\_CIL}. Druhý zmíněný datový zdroj jsme taktéž měli založený již z dřívějška. 
- 
-  \par Dalším krokem bylo vytvořit fyzické a logické schéma. Fyzické schéma datového modelu reprezentuje strukturu databáze na fyzické úrovni. Jde o popis vlastního uložení dat (např. uložení záznamu o konkrétním studentovi). Fyzické schéma pro zdrojovou databázi se v našem případě jmenuje \textit{LOVCIM\_ZDROJ3.INSTALL2} a používá schéma účtu INSTALL2 a pracovní schéma účtu LOFFEL. Toto nastavení souvisí s přiřazením různých uživatelských rolí a příslušných práv pro přístup k datům používané demo databáze stagu. Účet \textit{INSTALL2} je specifickým účtem, který obsahuje všechny tabulky databáze. Účet \textit{LOFFEL} je jedním z administrátorských účtů, který jako takový má přístup ke všem tabulkám. 
- 
-  \par Logické schéma reprezentuje logickou strukturu databáze. Jinak řečeno, logické schéma popisuje, jaká data jsou v databázi uložena a jaké jsou vztahy mezi těmito daty. Logické schéma v Odi studiu kombinuje dvojici kontext (viz dále) a fyzické schéma, které tímto logickým schématem svážeme dohromady. V naší úloze bylo potřeba založit opět pouze jedno schéma - logické schéma pro zdrojovou databázi(\textit{Zdrojova\_databaze\_SP}). Logické schéma pro cílovou databázi už v projektu existovalo. 
- 
-  \par Ke správnému nastavení obou schémat byl zapotřebí výše zmíněný kontext. Kontext je množina prostředků umožňujících provoz nebo simulaci jedné nebo více aplikací, které zpracovávají data. Do naší úlohy jsme využili již existující kontext \textit{lovcim}, který jsme nastavili u obou nově vytvořených schémat. 
- 
- \par Konečný stav vytvořených datových zdrojů a schémat je následující: \\
+\subsection{Datové zdroje a schémata}
 
-Datový zdroj: \textit{LOVCIM\_ZDROJ3} \newline
-Fyzické schéma: \textit{LOVCIM\_ZDROJ3.INSTALL2}\newline
-- Schéma: \textit{INSTALL2}\newline
-- Pracovní schéma: \textit{LOFFEL}\newline
-Logické schéma: \textit{Zdrojova\_databaze\_SP}\newline
-Kontext: lovcim \newline
+Proces vypracování úkolu se skládal z několika kroků.
+Předpokladem pro vytvoření komponent ETL bylo založení hlavního (MASTER\_INS\_REPO) a~pracovního repozitáře (TAUCHENL\_REPO).
+Tyto dva repozitáře jsme již měli založené z jednoho z prvních cvičení předmětu.
+Věnovali jsme se tedy rovnou založení datových zdrojů.
 
-Datový zdroj: \textit{LOVCIM\_CIL}\\
-Fyzické schéma: \textit{LOVCIM\_CIL.LOVCIM}\\
-- Schéma: \textit{LOVCIM}\\
-- Pracovní schéma: \textit{LOVCIM}\\
-Logické schéma: \textit{Cilova\_databaze}\\
-Kontext: lovcim\\
- 
- 
+Datové zdroje jsme pro náš projekt potřebovali dva - jeden pro zdrojovou databázi \textit{LOVCIM\_ZDROJ3} a jeden pro cílovou databázi \textit{LOVCIM\_CIL}.
+Druhý zmíněný datový zdroj jsme taktéž měli založený již z dřívějška.
+
+Dalším krokem bylo vytvořit fyzické a logické schéma.
+Fyzické schéma datového modelu reprezentuje strukturu databáze na fyzické úrovni.
+Jde o popis vlastního uložení dat (např. uložení záznamu o konkrétním studentovi).
+Fyzické schéma pro zdrojovou databázi se v našem případě jmenuje \textit{LOVCIM\_ZDROJ3.INSTALL2} a používá schéma účtu INSTALL2 a pracovní schéma účtu LOFFEL.
+Toto nastavení souvisí s přiřazením různých uživatelských rolí a příslušných práv pro přístup k datům používané demo databáze stagu.
+Účet \textit{INSTALL2} je specifickým účtem, který obsahuje všechny tabulky databáze.
+Účet \textit{LOFFEL} je jedním z administrátorských účtů, který jako takový má přístup ke všem tabulkám. 
+
+Logické schéma reprezentuje logickou strukturu databáze.
+Jinak řečeno, logické schéma popisuje, jaká data jsou v databázi uložena a jaké jsou vztahy mezi těmito daty.
+Logické schéma v ODI Studiu kombinuje dvojici kontext (viz dále) a fyzické schéma, které tímto logickým schématem svážeme dohromady.
+V naší úloze bylo potřeba založit opět pouze jedno schéma - logické schéma pro zdrojovou databázi(\textit{Zdrojova\_databaze\_SP}).
+Logické schéma pro cílovou databázi už v projektu existovalo.
+
+Ke správnému nastavení obou schémat byl zapotřebí výše zmíněný kontext.
+Kontext je množina prostředků umožňujících provoz nebo simulaci jedné nebo více aplikací, které zpracovávají data.
+Do naší úlohy jsme využili již existující kontext \textit{lovcim}, který jsme nastavili u obou nově vytvořených schémat. 
+
+Konečný stav vytvořených datových zdrojů a schémat je uveden v tabulce~\ref{table:table3}.
+
+\begin{table}[htb]
+    \centering
+
+    \begin{tabular}{lll}
+        \toprule
+
+                        & Zdroj                     & Cíl                   \\ \midrule
+        Datový zdroj    & LOVCIM\_ZDROJ3            & LOVCIM\_CIL           \\
+        Fyzické schéma  & LOVCIM\_ZDROJ3.INSTALL2   & LOVCIM\_CIL.LOVCIM    \\
+        Schéma          & INSTALL2                  & LOVCIM                \\
+        Pracovní schéma & LOFFEL                    & LOVCIM                \\
+        Logické schéma  & Zdrojova\_databaze\_SP    & Cilova\_databaze      \\
+        Kontext         & lovcim                    & lovcim                \\
+          
+        \bottomrule
+    \end{tabular}
+
+    \caption{Konečný stav vstupních a výstupních zdrojů \& schémat}
+    \label{table:table3}
+\end{table}
+\FloatBarrier
+
 \subsection{Datové modelování}
- \par Po připravení datových zdrojů jsme mohli začít s datovým modelováním. Založili jsme dva datové modely. Prvním datovým modelem je model \textit{Diplomky}. Jde o model zdrojový, ze kterého se načítají data při mapování. Tento datový model se skládá ze 3 tabulek: 
+
+Po připravení datových zdrojů jsme mohli začít s datovým modelováním.
+Založili jsme dva datové modely.
+Prvním datovým modelem je model \textit{Diplomky}.
+Jde o model zdrojový, ze kterého se načítají data při mapování.
+Tento datový model se skládá ze 3 tabulek: 
+
 \begin{itemize}
-    \item ABN\_DIPLOMOVE\_PRACE: Tabulka obsahující data o diplomových pracích
-    \item CIS\_PRACOVIST: Číselník pracovišť ZČU
-    \item OBORY: Tabulka obsahující data o oborech na ZČU 
+    \item ABN\_DIPLOMOVE\_PRACE: tabulka obsahující data o diplomových pracích,
+    \item CIS\_PRACOVIST: číselník pracovišť ZČU,
+    \item OBORY: tabulka obsahující data o oborech na ZČU.
 \end{itemize}
 
-Jak již bylo řečeno, tyto tabulky jsou zdrojové a jsou obsaženy ve zdrojové databázi demo stagu, odkud bylo potřeba je načíst. Vybrané tabulky vč. dat jsme načetli pomocí reverzního inženýrství. Vztahy mezi načtenými tabulkami jsou vidět na obr. č. \ref{fig:src-model}. 
+Jak již bylo řečeno, tyto tabulky jsou zdrojové a jsou obsaženy ve zdrojové databázi demo stagu, odkud bylo potřeba je načíst.
+Vybrané tabulky vč. dat jsme načetli pomocí reverzního inženýrství.
+Vztahy mezi načtenými tabulkami jsou vidět na obrázku číslo~\ref{fig:src-model}.
 
-Tabulky obsahují i pro náš úkol nepotřebná data (= nepotřebné sloupce). Ty je možné v Odi studiu z tabulek odebrat přes menu pro příslušný datový model. Přesněji řečeno postupem: Designer -> Models -> <Model folder> -> <Model> -> <Tabulka> (pravý klik) -> Open -> Attributes.
-Po výběru nepotřebných atributů je možné sloupce z modelu pomocí tlačítka Delete Attribute odstranit. 
+Tabulky obsahují i pro náš úkol nepotřebná data (= nepotřebné sloupce).
+Ty je možné v Odi studiu z tabulek odebrat přes menu pro příslušný datový model.
+Přesněji řečeno postupem: \textbf{Designer} -> \textbf{Models} -> \textbf{<Model folder>} -> \textbf{<Model>} -> \textbf{<Tabulka>} (pravý klik) -> \textbf{Open} -> \textbf{Attributes}.
+Po výběru nepotřebných atributů je možné sloupce z modelu pomocí tlačítka \textit{Delete Attribute} odstranit. 
 
-Druhým modelem je výstupní model \textit{Diplomky\_vystup}. Do tohoto modelu jsou uloženy výsledky z mapování. Na rozdíl od zdrojového modelu, ve kterém stačilo pouze načíst již existující tabulky, zde jsme museli nejprve cílové tabulky ve výstupním datovém zdroji založit.
+Druhým modelem je výstupní model \textit{Diplomky\_vystup}.
+Do tohoto modelu jsou uloženy výsledky z mapování.
+Na rozdíl od zdrojového modelu, ve kterém stačilo pouze načíst již existující tabulky, zde jsme museli nejprve cílové tabulky ve výstupním datovém zdroji založit.
 
-Pro založení výstupních tabulek jsme použili skript, který je vidět níže v sekci Zakládací skript. Pomocí tohoto skriptu jsme založili tabulky \textit{TRG\_KATEDRY} a \textit{TRG\_HODNOCENI\_DP}. Do modelu \textit{Diplomky\_vystup} jsme je načetli opět reverzním inženýrstvím.  
+Pro založení výstupních tabulek jsme použili skript, který je vidět níže v sekci Zakládací skript.
+Pomocí tohoto skriptu jsme založili tabulky \textit{TRG\_KATEDRY} a \textit{TRG\_HODNOCENI\_DP}.
+Do modelu \textit{Diplomky\_vystup} jsme je načetli opět reverzním inženýrstvím.  
 
 \subsection{Zakládací skript}
+
 \begin{lstlisting}[language=sql]
 
 CREATE TABLE TRG_KATEDRY (
@@ -118,12 +146,15 @@ CREATE TABLE TRG_HODNOCENI_DP (
 );
 \end{lstlisting}
 
+\subsection{Mapování}
 
- \subsection{Mapování}
- Posledním krokem vypracování úkolu bylo samotné mapování. ....
+Posledním krokem vypracování úkolu bylo samotné mapování.
+Máme dvě výstupní tabulky, proto mějme 2 mapovací procedury.
 
-
-
+První mapování slouží k výrobě dimenzionální tabulky obsahující katedry FAV.
+Filtrem na sloupec \textit{OBORY.FAKULTA\_OBORU} (=\'FAV\') vybereme pouze obory patřící pod FAV, vyfiltrovanou tabulku dále napojíme (join) na číselník pracovišť (\textit{OBORY.PRAC\_ZKR = CIS\_PRACOVIST.ZKR}).
+Z číselníku pracovišť vybereme název katedry a její číselný kód.
+Prkem distinct se pak vyvarujeme případným nekonzistencím v datech demo databáze.
 
 \begin{figure}[htb]
     \centering
@@ -139,6 +170,32 @@ CREATE TABLE TRG_HODNOCENI_DP (
     \caption{ODI Výstupní mapování do tabulky TRG\_KATEDRY, fyzické schéma}
     \label{fig:odi-mapping-trg-katedry-physical}
 \end{figure}
+\FloatBarrier
+
+Obdobně postupujeme v případě druhého mapování.
+Vyfiltrujeme pouze obory FAV, napojíme tabulku s hodnocením diplomových prací (\textit{ABN\_DIPLOMOVE\_PRACE.OBORIDNO = OBORY.OBORIDNO}).
+Ze cvičných důvodů napojíme i číselník pracovišť (\textit{CIS\_PRACOVIST.ZKR = OBORY.PRAC\_ZKR}).
+V zadání jsme definovali, že faktová tabulka bude obsahovat agregované hodnoty přes obory.
+Vlastnosti bloku AGGREGATE jsou v tabulce~\ref{table:table4}.
+
+\begin{table}[htb]
+    \centering
+
+    \begin{tabular}{ll}
+        \toprule
+
+        Atribut         & Výraz                             \\ \midrule
+        KATEDRA\_KOD    & CIS\_PRACOVIST.ZKR                \\
+        OBOR\_ID        & OBORY.OBORIDNO                    \\
+        OBOR\_NAZEV     & OBORY.CZ\_NAZEV                   \\
+        HODNOCENI       & AVG(ABN\_DIPLOMOVE\_PRACE.ZNAMKA) \\
+          
+        \bottomrule
+    \end{tabular}
+
+    \caption{Vlastnosti bloku aggregate}
+    \label{table:table4}
+\end{table}
 \FloatBarrier
 
 \begin{figure}[htb]
@@ -157,6 +214,8 @@ CREATE TABLE TRG_HODNOCENI_DP (
 \end{figure}
 \FloatBarrier
 
+Poslední obrázek ukazuje nabídku transformačních komponent ODI Studia.
+
 \begin{figure}[htb]
     \centering
     \includegraphics[width=0.55\textwidth]{graphs/odi-transformation-components.png}
@@ -164,7 +223,6 @@ CREATE TABLE TRG_HODNOCENI_DP (
     \label{fig:odi-transformation-components}
 \end{figure}
 \FloatBarrier
-
 
 \subsection{Výstupní model \& data}
 
@@ -239,7 +297,7 @@ V semestrální práci jsme si vyzkoušeli proces vytváření datové transform
 Tento proces byl náplní praktických cvičení, jednalo se tedy hlavně o důkaz replikovatelnosti postupu na vlastním zadání.
 Použitý nástroj, Oracle Data Integrator, je jeden z nejrozšířenějších ETL produktů vůbec.
 
-Praktická cvičení a semestrální práce nám tedy poskytli cennou příležitost zkusit si s tímto nástrojem pracovat a řešit případné potíže, které mohou při konstrukci transformací nastat.
+Praktická cvičení a semestrální práce nám tedy poskytly cennou příležitost zkusit si s tímto nástrojem pracovat a řešit případné potíže, které mohou při konstrukci transformací nastat.
 V našem konkrétním případě se pak jedná i o zajímavé propojení předmětů, jelikož jsme zvolili transformaci z logického databázového modelu do dimenzionální struktury, poskytujíc referenci na předmět KIV/DBM2.
 
 Jelikož nástroj ODI není jediným produktem tohoto zaměření, stojí za to zmínit silné a slabé stránky produktu.
