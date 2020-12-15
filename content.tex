@@ -12,28 +12,43 @@ Téma: Průměrné hodnocení Diplomových prací z kateder FAV,
 \end{itemize}
 
 \section{Analýza}
-Cílem naší semestrální práce bylo zjistit průměrné hodnocení diplomových prací v rámci jednotlivých kateder na Fakultě aplikovaných věd. Abychom tento úkol mohli realizovat, museli jsme nejprve vybrat vhodné tabulky z demo databáze stagu. Stag obsahuje více než 400 tabulek, z čehož jen jeho jádro tvoří více než 50 z nich. Zorientování se v databázi bylo velmi náročné. 
+Cílem naší semestrální práce bylo zjistit průměrné hodnocení diplomových prací v rámci jednotlivých kateder na Fakultě aplikovaných věd.
+Abychom tento úkol mohli realizovat, museli jsme nejprve vybrat vhodné tabulky z demo databáze stagu.
+Stag obsahuje více než 400 tabulek, z čehož jen jeho jádro tvoří více než 50 z nich.
+Zorientování se v databázi bylo velmi náročné.
 
-Po analýze obsahu tabulek stagu, jsme pro náš vstupní model vybrali tabulky \textit{OBORY}, \textit{CIS\_PRACOVIST} a \textit{ABN\_DIPLOMOVE\_PRACE}. 
+Po analýze obsahu tabulek stagu, jsme pro náš vstupní model vybrali tabulky \textit{OBORY}, \textit{CIS\_PRACOVIST} a \textit{ABN\_DIPLOMOVE\_PRACE}.
 
 Nejjednodušší z nich je tabulka \textit{CIS\_PRACOVIST}, která představuje číselník pracovišť na ZČU.
 Tabulka obsahuje 19 různých atributů.
 Pro nás jsou však důležité pouze první tři a to \textit{ZKR} (zkratka pracoviště, datový typ VARCHAR2(6 BYTE)), \textit{NAZEV} (název pracoviště, datový typ VARCHAR2(100 BYTE)) a \textit{CISLO\_PRAC} (číslo pracoviště, datový typ VARCHAR2(16 BYTE) ).
 Primární klíč tabulky tvoří sloupec \textit{ZKR}.
-Tuto tabulku jsme použili pro získání názvů kateder na FAV (více viz sekce Mapování). 
+Tuto tabulku jsme použili pro získání názvů kateder na FAV (více viz sekce Mapování).
 
 Tabulka \textit{OBORY} reprezentuje seznam oborů vyučovaných na ZČU.
-Relevantní sloupce pro naši úlohu jsou sloupce \textit{OBORIDNO} (ID oboru, datový typ NUMBER(10,0)), \textit{CZ\_NAZEV} (název oboru, datový typ VARCHAR2(200 BYTE)), \textit{ZKR} (zkratka oboru, datový typ VARCHAR2(10 BYTE)), \textit{PRAC\_ZKR} (zkratka pracoviště, datový typ VARCHAR2(6 BYTE)) a \textit{FAKULTA\_OBORU} (fakulta oboru, datový typ VARCHAR2(6 BYTE)). Primární klíč tvoří sloupec \textit{OBORNO}. Tuto tabulku jsme využili pro získání oborů vyučovaných na FAV. 
+Relevantní sloupce pro naši úlohu jsou sloupce \textit{OBORIDNO} (ID oboru, datový typ NUMBER(10,0)), \textit{CZ\_NAZEV} (název oboru, datový typ VARCHAR2(200 BYTE)), \textit{ZKR} (zkratka oboru, datový typ VARCHAR2(10 BYTE)), \textit{PRAC\_ZKR} (zkratka pracoviště, datový typ VARCHAR2(6 BYTE)) a \textit{FAKULTA\_OBORU} (fakulta oboru, datový typ VARCHAR2(6 BYTE)).
+Primární klíč tvoří sloupec \textit{OBORIDNO}.
+Tuto tabulku jsme využili pro získání oborů vyučovaných na FAV.
 
-Poslední a nejdůležitější vybranou tabulkou je tabulka \textit{ABN\_DIPLOMOVE\_PRACE}. 
-Z této tabulky jsme využili sloupce \textit{ZNAMKA} (výsledná známka DP, datový typ NUMBER(2,1)),  \textit{PRAC\_ZKR} (zkratka pracoviště, datový typ VARCHAR2(6 BYTE)) a \textit{OBORIDNO} (klíč do tabulky Obory, datový typ NUMBER(10,0)). Tuto tabulku jsme využili pro získání známek diplomových prací. 
-
-Tyto tabulky tvoří náš vstupní model. Vztahy mezi tabulkami ukazuje obr. č. \ref{fig:src-model}. 
+Poslední a nejdůležitější vybranou tabulkou je tabulka \textit{ABN\_DIPLOMOVE\_PRACE}.
+Z této tabulky jsme využili sloupce \textit{ZNAMKA} (výsledná známka DP, datový typ NUMBER(2,1)), \textit{PRAC\_ZKR} (zkratka pracoviště, datový typ VARCHAR2(6 BYTE)) a \textit{OBORIDNO} (klíč do tabulky Obory, datový typ NUMBER(10,0)).
+Tuto tabulku jsme využili pro získání známek diplomových prací.
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=0.7\textwidth]{graphs/src-model.png}
-    \caption{Vstupní model}
+    \includegraphics[width=0.55\textwidth]{graphs/fig-dp.png}
+    \caption{Ukázka selekce dat z tabulky \textit{ABN\_DIPLOMOVE\_PRACE}}
+    \label{fig:fig-dp}
+\end{figure}
+\FloatBarrier
+
+Tyto tabulky tvoří náš vstupní model.
+Vztahy mezi tabulkami ukazuje obr. č. \ref{fig:src-model} (kvůli velkému počtu atributů v tabulkách neodpovídá výčet sloupců na obrázku reálné situaci).
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.85\textwidth]{graphs/src-model.png}
+    \caption{Vstupní model (s nekompletním výčtem atributů)}
     \label{fig:src-model}
 \end{figure}
 \FloatBarrier
@@ -56,7 +71,8 @@ Jde o popis vlastního uložení dat (např. uložení záznamu o konkrétním s
 Fyzické schéma pro zdrojovou databázi se v našem případě jmenuje \textit{LOVCIM\_ZDROJ3.INSTALL2} a používá schéma účtu INSTALL2 a pracovní schéma účtu LOFFEL.
 Toto nastavení souvisí s přiřazením různých uživatelských rolí a příslušných práv pro přístup k datům používané demo databáze stagu.
 Účet \textit{INSTALL2} je specifickým účtem, který obsahuje všechny tabulky databáze.
-Účet \textit{LOFFEL} je jedním z administrátorských účtů, který jako takový má přístup ke všem tabulkám. 
+Účet \textit{LOFFEL} je jedním z administrátorských účtů, který má přístup cca ke 100 (pro nás relevantním) tabulkám uživatele \textit{INSTALL2}.
+\textit{LOFFEL} je použit jako pracovní schéma - během ETL procesu se do uživatelského prostoru vygenerují pomocné tabulky.
 
 Logické schéma reprezentuje logickou strukturu databáze.
 Jinak řečeno, logické schéma popisuje, jaká data jsou v databázi uložena a jaké jsou vztahy mezi těmito daty.
@@ -66,7 +82,7 @@ Logické schéma pro cílovou databázi už v projektu existovalo.
 
 Ke správnému nastavení obou schémat byl zapotřebí výše zmíněný kontext.
 Kontext je množina prostředků umožňujících provoz nebo simulaci jedné nebo více aplikací, které zpracovávají data.
-Do naší úlohy jsme využili již existující kontext \textit{lovcim}, který jsme nastavili u obou nově vytvořených schémat. 
+Do naší úlohy jsme využili již existující kontext \textit{lovcim}, který jsme nastavili u obou nově vytvořených schémat.
 
 Konečný stav vytvořených datových zdrojů a schémat je uveden v tabulce~\ref{table:table3}.
 
@@ -113,7 +129,7 @@ Vztahy mezi načtenými tabulkami jsou vidět na obrázku číslo~\ref{fig:src-m
 Tabulky obsahují i pro náš úkol nepotřebná data (= nepotřebné sloupce).
 Ty je možné v Odi studiu z tabulek odebrat přes menu pro příslušný datový model.
 Přesněji řečeno postupem: \textbf{Designer} -> \textbf{Models} -> \textbf{<Model folder>} -> \textbf{<Model>} -> \textbf{<Tabulka>} (pravý klik) -> \textbf{Open} -> \textbf{Attributes}.
-Po výběru nepotřebných atributů je možné sloupce z modelu pomocí tlačítka \textit{Delete Attribute} odstranit. 
+Po výběru nepotřebných atributů je možné sloupce z modelu pomocí tlačítka \textit{Delete Attribute} odstranit.
 
 Druhým modelem je výstupní model \textit{Diplomky\_vystup}.
 Do tohoto modelu jsou uloženy výsledky z mapování.
@@ -121,7 +137,7 @@ Na rozdíl od zdrojového modelu, ve kterém stačilo pouze načíst již existu
 
 Pro založení výstupních tabulek jsme použili skript, který je vidět níže v sekci Zakládací skript.
 Pomocí tohoto skriptu jsme založili tabulky \textit{TRG\_KATEDRY} a \textit{TRG\_HODNOCENI\_DP}.
-Do modelu \textit{Diplomky\_vystup} jsme je načetli opět reverzním inženýrstvím.  
+Do modelu \textit{Diplomky\_vystup} jsme je načetli opět reverzním inženýrstvím.
 
 \subsection{Zakládací skript}
 
@@ -152,13 +168,13 @@ Posledním krokem vypracování úkolu bylo samotné mapování.
 Máme dvě výstupní tabulky, proto mějme 2 mapovací procedury.
 
 První mapování slouží k výrobě dimenzionální tabulky obsahující katedry FAV.
-Filtrem na sloupec \textit{OBORY.FAKULTA\_OBORU} (=\'FAV\') vybereme pouze obory patřící pod FAV, vyfiltrovanou tabulku dále napojíme (join) na číselník pracovišť (\textit{OBORY.PRAC\_ZKR = CIS\_PRACOVIST.ZKR}).
+Filtrem na sloupec \textit{OBORY.FAKULTA\_OBORU} (=FAV) vybereme pouze obory patřící pod FAV, vyfiltrovanou tabulku dále napojíme (join) na číselník pracovišť (\textit{OBORY.PRAC\_ZKR = CIS\_PRACOVIST.ZKR}).
 Z číselníku pracovišť vybereme název katedry a její číselný kód.
 Prvkem \textit{DISTINCT\_} se pak vyvarujeme případným nekonzistencím v datech demo databáze.
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=0.7\textwidth]{graphs/odi-mapping-trg-katedry.png}
+    \includegraphics[width=0.9\textwidth]{graphs/odi-mapping-trg-katedry.png}
     \caption{ODI Výstupní mapování do tabulky TRG\_KATEDRY, logické schéma}
     \label{fig:odi-mapping-trg-katedry}
 \end{figure}
@@ -166,7 +182,7 @@ Prvkem \textit{DISTINCT\_} se pak vyvarujeme případným nekonzistencím v date
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=0.7\textwidth]{graphs/odi-mapping-trg-katedry-physical.png}
+    \includegraphics[width=0.9\textwidth]{graphs/odi-mapping-trg-katedry-physical.png}
     \caption{ODI Výstupní mapování do tabulky TRG\_KATEDRY, fyzické schéma}
     \label{fig:odi-mapping-trg-katedry-physical}
 \end{figure}
@@ -200,7 +216,7 @@ Vlastnosti bloku AGGREGATE jsou v tabulce~\ref{table:table4}.
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=0.7\textwidth]{graphs/odi-mapping-trg-hodnoceni-dp.png}
+    \includegraphics[width=0.9\textwidth]{graphs/odi-mapping-trg-hodnoceni-dp.png}
     \caption{ODI Výstupní mapování do tabulky TRG\_HODNOCENI\_DP, logické schéma}
     \label{fig:odi-mapping-trg-hodnoceni}
 \end{figure}
@@ -208,7 +224,7 @@ Vlastnosti bloku AGGREGATE jsou v tabulce~\ref{table:table4}.
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=0.7\textwidth]{graphs/odi-mapping-trg-hodnoceni-dp-physical.png}
+    \includegraphics[width=0.9\textwidth]{graphs/odi-mapping-trg-hodnoceni-dp-physical.png}
     \caption{ODI Výstupní mapování do tabulky TRG\_HODNOCENI\_DP, fyzické schéma}
     \label{fig:odi-mapping-trg-hodnoceni-physical}
 \end{figure}
@@ -293,17 +309,21 @@ Jelikož by každý obor měl být v tabulce pouze jednou, je identifikační č
 
 V tabulce si můžeme povšimnout, že např. obor \textit{Geomatika} se objevuje dvakrát, s odlišným ID.
 To bude způsobeno reálností dat.
-Předpokládáme totiž, že při nové atestaci stejného oboru se zachová jeho název, změní se však jeho ID.
+V tomto případě se bude totiž jednat o prezenční studium v jednom případě a distanční studium ve druhém.
+Dalším jevem vedoucím k duplikaci oborů je nová atestace stejného oboru, kdy se zachová název, ale změní se jeho ID.
 
 Dalším zajímavým jevem je výskyt průměrného hodnocení 4, a přítomnosti NULL hodnoty.
-To je zase způsobeno nedostatečnou reálností testovacích dat, kdy vygenerovaní studenti a diplomové práce nebudou dostatečně pokrývat prostor dat.
 Po kontrolním výběru dat jsme zjistili, že v obou případech (případ průměrného hodnocení 4 a NULL) je oboru přiřazena právě jedna diplomová práce, po jedné s hodnocením 4 a bez hodnocení.
+Bude se pravděpodobně jednat o málo početné, distanční obory.
+
+Datovou sadu jsme nijak časově nefiltrovali.
+V datech se k datu odevzdání semestrální práce nachází \( 76010 \) záznamů diplomových prací, pouze \( 753 \) jich je vedených pod Fakultou aplikovaných věd.
 
 \section{Závěr}
 
 V semestrální práci jsme si vyzkoušeli proces vytváření datové transformace.
 Tento proces byl náplní praktických cvičení, jednalo se tedy hlavně o důkaz replikovatelnosti postupu na vlastním zadání.
-Použitý nástroj, Oracle Data Integrator, je jeden z nejrozšířenějších ETL produktů vůbec.
+Použitý nástroj, Oracle Data Integrator, je jeden z nejrozšířenějších ETL produktů vůbec (viz \enquote*{2020 Gartner Magic Quadrant for Data Integration Tools}).
 
 Praktická cvičení a semestrální práce nám tedy poskytly cennou příležitost zkusit si s tímto nástrojem pracovat a řešit případné potíže, které mohou při konstrukci transformací nastat.
 V našem konkrétním případě se pak jedná i o zajímavé propojení předmětů, jelikož jsme zvolili transformaci z logického databázového modelu do dimenzionální struktury, poskytujíc referenci na předmět KIV/DBM2.
